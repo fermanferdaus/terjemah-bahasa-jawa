@@ -8,3 +8,6 @@ SpeechRecognition>=3.8.1
 openai==0.28.0
 Pillow>=9.0.0
 imageio[ffmpeg]>=2.9.0
+# PyAudio hanya untuk Windows
+pyaudio; sys_platform == "win32"
+sounddevice>=0.4.4
