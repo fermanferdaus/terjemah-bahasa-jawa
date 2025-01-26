@@ -157,7 +157,7 @@ if text.strip():
                 model="gpt-4",
                 messages=[{"role": "user", "content": prompt}]
             )
-            translation = response['choices'][0]['message']['content'].strip()
+            translation = response.choices[0].message["content"]
             st.success("Hasil Terjemahan:")
             st.markdown(f"### {translation}")
 
