@@ -2,15 +2,14 @@ import streamlit as st
 import cv2
 import pytesseract
 import numpy as np
-from openai import AsyncOpenAI
-
-aclient = AsyncOpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+import openai
 from pdf2image import convert_from_bytes
 from gtts import gTTS
 import speech_recognition as sr
 import os
 
 # Konfigurasi API GPT
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Fungsi untuk preprocessing gambar
 def preprocess_image(image):
@@ -154,11 +153,11 @@ if text.strip():
                 
                 Terjemahkan teks ini ke bahasa yang paling sesuai dengan mempertahankan arti, konteks, dan nuansa budaya.
                 """
-            response = aclient.chat.completions.create(model="gpt-4",
-            messages=[{"role": "user", "content": prompt}])
-
-            translation = response.choices[0].message.content
-
+            response = openai.ChatCompletion.create(
+                model="gpt-4",
+                messages=[{"role": "user", "content": prompt}],
+            )
+            translation = response['choices'][0]['message']['content'].strip()
             st.success("Hasil Terjemahan:")
             st.markdown(f"### {translation}")
 
