@@ -4,7 +4,6 @@ import pytesseract
 import numpy as np
 import openai
 from pdf2image import convert_from_bytes
-import speech_recognition as sr
 
 # Konfigurasi API GPT
 openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -36,22 +35,6 @@ def process_pdf(pdf_file):
         st.error(f"Kesalahan saat memproses PDF: {str(e)}")
         return ""
 
-# Fungsi untuk pengenalan suara
-def recognize_speech():
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        st.info("Silakan berbicara...")
-        audio = recognizer.listen(source)
-        try:
-            text = recognizer.recognize_google(audio, language="id-ID")
-            st.success("Teks yang dikenali: " + text)
-            return text
-        except sr.UnknownValueError:
-            st.error("Tidak dapat mengenali suara.")
-        except sr.RequestError as e:
-            st.error(f"Kesalahan pada layanan pengenalan suara: {e}")
-        return ""
-
 # Judul dan Desain Aplikasi
 st.markdown(
     """
@@ -72,12 +55,12 @@ st.markdown(
 )
 
 st.markdown("<div class='main-title'>Aplikasi Penerjemah Bahasa Jawa dan Indonesia dengan OCR</div>", unsafe_allow_html=True)
-st.markdown("<div class='sub-title'>Dilengkapi dengan Pengenalan Suara</div>", unsafe_allow_html=True)
+st.markdown("<div class='sub-title'>Tanpa Fitur Pengenalan Suara</div>", unsafe_allow_html=True)
 
 # Pilihan Input
 input_option = st.radio(
     "Pilih metode input:",
-    ["Kamera", "Unggah File (Gambar/PDF)", "Pengenalan Suara"],
+    ["Kamera", "Unggah File (Gambar/PDF)"],
     horizontal=True,
 )
 
@@ -99,19 +82,6 @@ elif input_option == "Unggah File (Gambar/PDF)":
         else:
             file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
             image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-elif input_option == "Pengenalan Suara":
-    # Tombol untuk Mulai Rekam dan Reset
-    st.markdown("### Rekam Suara")
-    if "recognized_text" not in st.session_state:
-        st.session_state["recognized_text"] = ""
-
-    if st.button("Mulai Rekam"):
-        st.session_state["recognized_text"] = recognize_speech()
-
-    if st.button("Reset"):
-        st.session_state["recognized_text"] = ""
-
-    text = st.session_state["recognized_text"]
 
 if image is not None:
     st.markdown("### Gambar yang Diproses")
@@ -145,4 +115,4 @@ if text.strip():
         except Exception as e:
             st.error(f"Terjadi kesalahan: {str(e)}")
 else:
-    st.info("Unggah file, ambil gambar, atau gunakan pengenalan suara untuk memulai.")
+    st.info("Unggah file atau ambil gambar untuk memulai.")
