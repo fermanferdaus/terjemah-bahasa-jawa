@@ -11,5 +11,3 @@ imageio[ffmpeg]>=2.9.0
 # PyAudio hanya untuk Windows
 pyaudio; sys_platform == "win32"
 sounddevice>=0.4.4
-PyAudio-0.2.14-cp312-cp312-win_amd64.whl
-
