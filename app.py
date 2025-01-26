@@ -5,8 +5,9 @@ import numpy as np
 import openai
 from pdf2image import convert_from_bytes
 from gtts import gTTS
-import speech_recognition as sr
+import sounddevice as sd
 import os
+import wavio
 
 # Konfigurasi API GPT
 openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -49,21 +50,18 @@ def generate_tts(text, language="id"):
         st.error(f"Kesalahan saat menghasilkan TTS: {str(e)}")
         return None
 
-# Fungsi untuk pengenalan suara
-def recognize_speech():
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        st.info("Silakan berbicara...")
-        audio = recognizer.listen(source)
-        try:
-            text = recognizer.recognize_google(audio, language="id-ID")
-            st.success("Teks yang dikenali: " + text)
-            return text
-        except sr.UnknownValueError:
-            st.error("Tidak dapat mengenali suara.")
-        except sr.RequestError as e:
-            st.error(f"Kesalahan pada layanan pengenalan suara: {e}")
-        return ""
+# Fungsi untuk pengenalan suara menggunakan sounddevice
+def record_audio(duration=5, fs=44100):
+    try:
+        st.info(f"Rekaman dimulai. Silakan berbicara selama {duration} detik...")
+        audio = sd.rec(int(duration * fs), samplerate=fs, channels=1)
+        sd.wait()
+        wavio.write("recorded.wav", audio, fs, sampwidth=2)
+        st.success("Rekaman selesai!")
+        return "recorded.wav"
+    except Exception as e:
+        st.error(f"Kesalahan saat merekam audio: {e}")
+        return None
 
 # Judul dan Desain Aplikasi
 st.markdown(
@@ -119,18 +117,11 @@ elif input_option == "Unggah File (Gambar/PDF)":
             file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
             image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 elif input_option == "Pengenalan Suara":
-    # Tombol untuk Mulai Rekam dan Reset
     st.markdown("### Rekam Suara")
-    if "recognized_text" not in st.session_state:
-        st.session_state["recognized_text"] = ""
-
     if st.button("Mulai Rekam"):
-        st.session_state["recognized_text"] = recognize_speech()
-
-    if st.button("Reset"):
-        st.session_state["recognized_text"] = ""
-
-    text = st.session_state["recognized_text"]
+        audio_file = record_audio()
+        if audio_file:
+            st.audio(audio_file, format="audio/wav")
 
 if image is not None:
     st.markdown("### Gambar yang Diproses")
@@ -168,6 +159,6 @@ if text.strip():
                 st.audio(audio_bytes, format="audio/mp3")
 
         except Exception as e:
-            st.error(f"Terjadi kesalahan: {str(e)}")
+            st.error(f"Terjadi kesalahan: {e}")
 else:
     st.info("Unggah file, ambil gambar, atau gunakan pengenalan suara untuk memulai.")
