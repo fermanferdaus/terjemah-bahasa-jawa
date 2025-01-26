@@ -4,6 +4,8 @@ import pytesseract
 import numpy as np
 import openai
 from pdf2image import convert_from_bytes
+from gtts import gTTS
+import os
 
 # Konfigurasi API GPT
 openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -35,6 +37,17 @@ def process_pdf(pdf_file):
         st.error(f"Kesalahan saat memproses PDF: {str(e)}")
         return ""
 
+# Fungsi untuk menghasilkan TTS
+def generate_tts(text, language="id"):
+    try:
+        tts = gTTS(text, lang=language)
+        audio_file = "output.mp3"
+        tts.save(audio_file)
+        return audio_file
+    except Exception as e:
+        st.error(f"Kesalahan saat menghasilkan TTS: {str(e)}")
+        return None
+
 # Judul dan Desain Aplikasi
 st.markdown(
     """
@@ -49,13 +62,19 @@ st.markdown(
             text-align: center;
             margin-bottom: 20px;
         }
+        .sidebar .css-17eq0hr {
+            background-color: #f8f9fa;
+        }
+        footer {
+            visibility: hidden;
+        }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
 st.markdown("<div class='main-title'>Aplikasi Penerjemah Bahasa Jawa dan Indonesia dengan OCR</div>", unsafe_allow_html=True)
-st.markdown("<div class='sub-title'>Tanpa Fitur Pengenalan Suara</div>", unsafe_allow_html=True)
+st.markdown("<div class='sub-title'>Dilengkapi dengan Pemrosesan Gambar dan PDF</div>", unsafe_allow_html=True)
 
 # Pilihan Input
 input_option = st.radio(
@@ -111,6 +130,12 @@ if text.strip():
             translation = response['choices'][0]['message']['content'].strip()
             st.success("Hasil Terjemahan:")
             st.markdown(f"### {translation}")
+
+            # TTS untuk hasil terjemahan
+            tts_file = generate_tts(translation, language="id")
+            if tts_file:
+                audio_bytes = open(tts_file, "rb").read()
+                st.audio(audio_bytes, format="audio/mp3")
 
         except Exception as e:
             st.error(f"Terjadi kesalahan: {str(e)}")
