@@ -5,4 +5,4 @@ numpy
 pdf2image
 gtts
 SpeechRecognition
-openai
+openai==0.28.0
