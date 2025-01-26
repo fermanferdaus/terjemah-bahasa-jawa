@@ -62,16 +62,8 @@ st.markdown(
             text-align: center;
             margin-bottom: 20px;
         }
-        .radio-center-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .radio-center {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
+        .sidebar .css-17eq0hr {
+            background-color: #f8f9fa;
         }
         footer {
             visibility: hidden;
@@ -85,14 +77,11 @@ st.markdown("<div class='main-title'>Aplikasi Penerjemah Bahasa Jawa dan Indones
 st.markdown("<div class='sub-title'>Dilengkapi dengan Pemrosesan Gambar dan PDF</div>", unsafe_allow_html=True)
 
 # Pilihan Input
-st.markdown('<div class="radio-center-container">', unsafe_allow_html=True)
 input_option = st.radio(
     "Pilih metode input:",
     ["Kamera", "Unggah File (Gambar/PDF)"],
     horizontal=True,
-    key="input_radio"
 )
-st.markdown('</div>', unsafe_allow_html=True)
 
 image = None
 text = ""
