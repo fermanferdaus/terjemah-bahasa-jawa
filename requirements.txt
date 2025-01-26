@@ -1,0 +1,8 @@
+streamlit
+opencv-python-headless
+pytesseract
+numpy
+pdf2image
+gtts
+SpeechRecognition
+openai
