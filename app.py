@@ -153,13 +153,11 @@ if text.strip():
                 
                 Terjemahkan teks ini ke bahasa yang paling sesuai dengan mempertahankan arti, konteks, dan nuansa budaya.
                 """
-            response = openai.ChatCompletion.acreate(
+            response = openai.ChatCompletion.create(
                 model="gpt-4",
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": prompt}],
             )
-
-            translation = response.choices[0].message["content"]
-
+            translation = response['choices'][0]['message']['content'].strip()
             st.success("Hasil Terjemahan:")
             st.markdown(f"### {translation}")
 
