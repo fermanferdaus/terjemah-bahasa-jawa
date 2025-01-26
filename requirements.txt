@@ -7,3 +7,4 @@ gtts
 SpeechRecognition
 openai==0.28.0
 Pillow
+sounddevice
